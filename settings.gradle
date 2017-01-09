@@ -1,0 +1,9 @@
+include 'core',
+        'test',
+        'store:redis',
+        'store:s3',
+        'lock:s3',
+        'lock:redis'
+
+rootProject.name = 'upsilon'
+
