@@ -1,26 +1,24 @@
 package com.vevo.upsilon.task;
 
 import com.beust.jcommander.internal.Lists;
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
+import com.vevo.upsilon.di.DependencyInjector;
 import com.vevo.upsilon.except.UpsilonInitializationException;
 import com.vevo.upsilon.store.Version;
 import com.vevo.upsilon.task.parse.ParsedVersion;
 import com.vevo.upsilon.task.parse.ParsedVersions;
-import org.codejargon.feather.Feather;
-import org.codejargon.feather.Provides;
 import org.testng.annotations.Test;
 
 import javax.inject.Inject;
-
-import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.fail;
 
 public class TasksHolderTest {
 
@@ -36,9 +34,9 @@ public class TasksHolderTest {
         ParsedVersions versions = mock(ParsedVersions.class);
         when(versions.getVersions()).thenReturn(Lists.newArrayList(version));
 
-        Feather feather = Feather.with();
+        DependencyInjector injector = new DependencyInjector();
 
-        TasksHolder store = TasksHolder.load(versions, feather);
+        TasksHolder store = TasksHolder.load(versions, injector);
 
         assertNotNull(store.getTasksBlocks().iterator().next());
     }
@@ -55,9 +53,9 @@ public class TasksHolderTest {
         ParsedVersions versions = mock(ParsedVersions.class);
         when(versions.getVersions()).thenReturn(Lists.newArrayList(version));
 
-        Feather feather = Feather.with();
+        DependencyInjector injector = new DependencyInjector();
 
-        TasksHolder.load(versions, feather);
+        TasksHolder.load(versions, injector);
     }
 
     public static class TaskWithDep implements Task {
@@ -76,14 +74,6 @@ public class TasksHolderTest {
         public void rollback() {}
     }
 
-    public class TestModule {
-
-        @Provides
-        Multimap whatever() {
-            return HashMultimap.create();
-        }
-    }
-
     /**
      * Let's make sure that we can use a task with a module dependency injected
      */
@@ -96,9 +86,10 @@ public class TasksHolderTest {
         ParsedVersions versions = mock(ParsedVersions.class);
         when(versions.getVersions()).thenReturn(Lists.newArrayList(version));
 
-        Feather feather = Feather.with(new TestModule());
+        DependencyInjector injector = new DependencyInjector();
+        injector.register(ArrayListMultimap.create(), Multimap.class);
 
-        TasksHolder store = TasksHolder.load(versions, feather);
+        TasksHolder store = TasksHolder.load(versions, injector);
         TasksBlock tasks = store.getTasksBlocks().iterator().next();
 
         assertNotNull(((TaskWithDep) tasks.getTasks().get(0)).dep);

@@ -2,8 +2,10 @@ include 'core',
         'test',
         'store:redis',
         'store:s3',
+        'store:dynamodb',
         'lock:s3',
-        'lock:redis'
+        'lock:redis',
+        'lock:dynamodb'
 
 rootProject.name = 'upsilon'
 

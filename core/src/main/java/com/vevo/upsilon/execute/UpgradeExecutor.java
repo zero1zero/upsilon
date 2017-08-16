@@ -1,11 +1,10 @@
 package com.vevo.upsilon.execute;
 
-import com.vevo.upsilon.lock.Lock;
 import com.vevo.upsilon.store.Store;
 import com.vevo.upsilon.store.Version;
 import com.vevo.upsilon.task.Task;
-import com.vevo.upsilon.task.TasksHolder;
 import com.vevo.upsilon.task.TasksBlock;
+import com.vevo.upsilon.task.TasksHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

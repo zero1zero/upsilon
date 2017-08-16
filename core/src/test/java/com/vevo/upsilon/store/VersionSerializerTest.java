@@ -2,7 +2,7 @@ package com.vevo.upsilon.store;
 
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 public class VersionSerializerTest {
 

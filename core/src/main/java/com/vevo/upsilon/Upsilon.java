@@ -1,6 +1,7 @@
 package com.vevo.upsilon;
 
 import com.google.common.collect.Lists;
+import com.vevo.upsilon.di.DependencyInjector;
 import com.vevo.upsilon.except.UpsilonUpgradeException;
 import com.vevo.upsilon.execute.UpgradeExecutor;
 import com.vevo.upsilon.lock.Lock;
@@ -9,7 +10,6 @@ import com.vevo.upsilon.task.TasksHolder;
 import com.vevo.upsilon.task.load.TasksLoader;
 import com.vevo.upsilon.task.parse.ParsedVersions;
 import com.vevo.upsilon.task.parse.ParsedVersionsLoader;
-import org.codejargon.feather.Feather;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,13 +63,11 @@ public class Upsilon {
 
     private Upsilon(TasksLoader tasksLoader, Store store, Lock lock, List<?> modules) {
 
-        Feather feather = Feather.with(
-                modules
-        );
+        DependencyInjector injector = new DependencyInjector();
 
         ParsedVersions versions = ParsedVersionsLoader.load(tasksLoader);
 
-        TasksHolder tasksHolder = TasksHolder.load(versions, feather);
+        TasksHolder tasksHolder = TasksHolder.load(versions, injector);
 
         UpgradeExecutor executor = UpgradeExecutor.create(store, tasksHolder);
 

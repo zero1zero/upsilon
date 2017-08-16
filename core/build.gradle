@@ -14,8 +14,7 @@ dependencies {
     compile 'com.google.guava:guava:21.0-rc2'
 
     compile 'org.parboiled:parboiled-java:1.1.7'
-    compile 'org.codejargon.feather:feather:1.0'
-
+    compile 'javax.inject:javax.inject:1'
     compile 'org.slf4j:slf4j-api:1.7.22'
 
     testCompile 'org.testng:testng:6.10'

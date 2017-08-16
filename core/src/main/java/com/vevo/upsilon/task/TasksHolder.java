@@ -3,13 +3,12 @@ package com.vevo.upsilon.task;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.vevo.upsilon.di.DependencyInjector;
 import com.vevo.upsilon.except.UpsilonInitializationException;
 import com.vevo.upsilon.except.UpsilonUpgradeException;
 import com.vevo.upsilon.store.Version;
 import com.vevo.upsilon.task.parse.ParsedVersion;
 import com.vevo.upsilon.task.parse.ParsedVersions;
-import org.codejargon.feather.Feather;
-import org.codejargon.feather.Key;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +21,8 @@ public class TasksHolder {
 
     private final List<TasksBlock> tasksBlocks = Lists.newArrayList();
 
-    public static TasksHolder load(ParsedVersions versions, Feather feather) {
+    @SuppressWarnings("unchecked")
+    public static TasksHolder load(ParsedVersions versions, DependencyInjector injector) {
 
         TasksHolder store = new TasksHolder();
 
@@ -32,14 +32,14 @@ public class TasksHolder {
 
             for (String task : version.getTasks()) {
 
-                Class<?> taskClass;
+                Class<? extends Task> taskClass;
                 try {
-                    taskClass = Class.forName(task);
+                    taskClass = (Class<? extends Task>) Class.forName(task);
                 } catch (ClassNotFoundException e) {
                     throw new UpsilonInitializationException("Task class '" + task + "' not found on the classpath!", e);
                 }
 
-                Task loaded = (Task) feather.instance(Key.of(taskClass));
+                Task loaded = injector.instance(taskClass);
 
                 checkState(loaded != null, "Could not instantiate task class '" + taskClass + "'");
 
