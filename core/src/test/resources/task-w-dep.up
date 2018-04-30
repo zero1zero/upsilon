@@ -1,2 +1,2 @@
 0.1a
-  - com.vevo.upsilon.module.DependenciesTest$TaskWDep
+  - com.vevo.upsilon.di.DependenciesTest$TaskWDep

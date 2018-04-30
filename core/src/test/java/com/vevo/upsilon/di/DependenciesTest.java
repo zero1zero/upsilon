@@ -11,12 +11,14 @@ import java.util.concurrent.ExecutionException;
 
 import static java.util.Objects.requireNonNull;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class DependenciesTest {
 
     public static class Dep1 {}
 
     public static class TaskWDep implements Task {
+        static boolean upgraded = false;
         @Inject
         public TaskWDep(Dep1 dep1) {
             requireNonNull(dep1);
@@ -24,12 +26,12 @@ public class DependenciesTest {
 
         @Override
         public void upgrade() {
-
+            upgraded = true;
         }
 
         @Override
         public void rollback() {
-
+            upgraded = false;
         }
     }
 
@@ -53,5 +55,6 @@ public class DependenciesTest {
         upsilon.upgrade().get();
 
         assertEquals(upsilon.getStatus(), UpgradeStatus.COMPLETED);
+        assertTrue(TaskWDep.upgraded);
     }
 }

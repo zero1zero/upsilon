@@ -8,5 +8,4 @@ public class ClasspathTaskLoaderTest {
     public void loadSimple() {
         ClasspathTasksLoader.from("classpathloadertest.up");
     }
-
 }
