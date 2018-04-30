@@ -62,7 +62,7 @@ public class VersionsParser extends BaseParser<Object> {
                                 CharRange('a', 'z'),
                                 CharRange('A', 'Z'),
                                 CharRange('0', '9'),
-                                Ch('.')
+                                AnyOf(new char[] {'.', '$'})
                         )
                 ),
                 poke(version.get().addTask(match()))

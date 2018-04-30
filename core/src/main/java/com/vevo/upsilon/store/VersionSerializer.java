@@ -1,5 +1,9 @@
 package com.vevo.upsilon.store;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VersionSerializer {
 
     public static String serialize(Version version) {

@@ -6,7 +6,7 @@ public class ClasspathTaskLoaderTest {
 
     @Test
     public void loadSimple() {
-        ClasspathTasksLoader.from("/tasks.up");
+        ClasspathTasksLoader.from("classpathloadertest.up");
     }
 
 }

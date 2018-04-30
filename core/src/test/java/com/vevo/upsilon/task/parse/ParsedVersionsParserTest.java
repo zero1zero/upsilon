@@ -104,7 +104,7 @@ public class ParsedVersionsParserTest {
 
     @Test
     public void sampleFile() {
-        String file = FileUtils.readAllTextFromResource("tasks.up");
+        String file = FileUtils.readAllTextFromResource("classpathloadertest.up");
 
         ParsedVersions versions = run(file).resultValue;
 

@@ -4,6 +4,8 @@ import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import com.vevo.upsilon.except.UpsilonInitializationException;
 import com.vevo.upsilon.task.load.TasksLoader;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.parboiled.Parboiled;
 import org.parboiled.buffers.IndentDedentInputBuffer;
 import org.parboiled.errors.ErrorUtils;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ParsedVersionsLoader {
 
     public static ParsedVersions load(TasksLoader loader) {

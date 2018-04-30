@@ -11,7 +11,7 @@ public class ParsedParsedVersionsLoaderTest {
      */
     @Test(expectedExceptions = UpsilonInitializationException.class, expectedExceptionsMessageRegExp = ".*Invalid input 'i'.*")
     public void reportParseErrors() {
-        new ParsedVersionsLoader().load(ClasspathTasksLoader.from("bad_tasks.up"));
+        ParsedVersionsLoader.load(ClasspathTasksLoader.from("bad_tasks.up"));
     }
 
 }

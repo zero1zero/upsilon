@@ -1,5 +1,6 @@
 package com.vevo.upsilon.execute;
 
+import com.google.common.base.Supplier;
 import com.vevo.upsilon.store.Store;
 import com.vevo.upsilon.store.Version;
 import com.vevo.upsilon.task.Task;
@@ -9,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -19,6 +23,8 @@ public class UpgradeExecutor {
     private final TasksHolder tasksHolder;
     private final Store store;
 
+    private final ExecutorService taskExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "UpsilonUpgradeExecutor"));
+
     public static UpgradeExecutor create(Store store, TasksHolder tasksHolder) {
         return new UpgradeExecutor(tasksHolder, store);
     }
@@ -28,7 +34,11 @@ public class UpgradeExecutor {
         this.store = store;
     }
 
-    public void execute() {
+    public CompletableFuture<UpgradeStatus> execute() {
+        return CompletableFuture.supplyAsync((Supplier<UpgradeStatus>) this::doExecute, taskExecutor);
+    }
+
+    private UpgradeStatus doExecute() {
 
         Iterable<TasksBlock> tasksBlocks;
 
@@ -48,14 +58,14 @@ public class UpgradeExecutor {
 
         Task failedTask = null;
         for (TasksBlock tasksBlock : tasksBlocks) {
-            log.info("Starting upgrade of version task block '" + tasksBlock.getVersion() + "'");
+            log.info("Starting upgrade of version task block '{}'", tasksBlock.getVersion());
 
             boolean successfulVersionRun = true;
             for (Task task : tasksBlock.getTasks()) {
-                log.info("Running upgrade for task '" + task + "'");
+                log.info("Running upgrade for task '{}'", task);
                 try {
                     task.upgrade();
-                } catch (Throwable t) {
+                } catch (Exception t) {
 
                     log.error("Exception during upgrade task '" + task + "'. Proceeding with rollback of all tasks in that version.", t);
 
@@ -72,7 +82,7 @@ public class UpgradeExecutor {
 
                 //rollback all tasks (including failed) that were executed for this version
                 for (Task task : tasksHolder.getTasksBefore(tasksBlock.getVersion(), failedTask)) {
-                    log.info("Rolling back '" + task + "'");
+                    log.info("Rolling back '{}'", task);
                     try {
                         task.rollback();
                     } catch (Throwable e) {
@@ -83,7 +93,7 @@ public class UpgradeExecutor {
                 //set version to last successful
                 store.setVersion(currentVersion.get());
 
-                return;
+                return UpgradeStatus.FAILED;
             }
 
             //if we got here that means that all the tasks completed for this version
@@ -94,5 +104,7 @@ public class UpgradeExecutor {
         store.setVersion(currentVersion.get());
 
         log.info("Completed upgrade!");
+
+        return UpgradeStatus.COMPLETED;
     }
 }

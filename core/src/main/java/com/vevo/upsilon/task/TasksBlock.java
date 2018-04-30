@@ -1,11 +1,15 @@
 package com.vevo.upsilon.task;
 
 import com.vevo.upsilon.store.Version;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@EqualsAndHashCode
+@ToString
 public class TasksBlock {
 
     private final Version version;
@@ -22,31 +26,5 @@ public class TasksBlock {
 
     public List<Task> getTasks() {
         return tasks;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TasksBlock that = (TasksBlock) o;
-
-        if (!version.equals(that.version)) return false;
-        return tasks.equals(that.tasks);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = version.hashCode();
-        result = 31 * result + tasks.hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "TasksBlock{" +
-                "version=" + version +
-                ", tasks=" + tasks +
-                '}';
     }
 }
