@@ -1,4 +1,4 @@
-group 'com.vevo.upsilon.store'
+group 'com.vevo.upsilon.ext'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
@@ -10,5 +10,10 @@ repositories {
 }
 
 dependencies {
+    compile project(':core')
+
+    compile 'software.amazon.awssdk:s3:2.0.0-preview-1'
+
+    compile 'org.mockito:mockito-core:2.18.3'
     testCompile 'org.testng:testng:6.10'
 }

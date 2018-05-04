@@ -12,5 +12,8 @@ repositories {
 
 dependencies {
     testCompile project(':core')
+
+    testCompile project(':ext:s3')
+
     testCompile 'org.testng:testng:6.10'
 }

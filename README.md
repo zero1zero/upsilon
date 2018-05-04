@@ -65,25 +65,48 @@ nodes in the cluster have to do the same work multiple times.
 
 ## Usage
 For the purposes of example usage, we are going to assume you have a health check
-endpoint with an `up()` and `ready()` method in your services.
+endpoint with a simple `ready()` method.
+
+An example of very basic, single node, usage:
 
 ```java
 public class HealthCheck {
 
     /**
-     * Called to determine if a service node has started but not necessarily if ready to receive production traffic
-     */
-    boolean up() {
-
-    }
-
-    /**
      * Called to determine if the service node is ready to receive production traffic
      */
     boolean ready() {
+        //default Upsilon setup, pulling tasks from 'tasks.up'
+        //locks and storage will use in memory implementations, meaning no versions will be persisted
+        Upsilon upsilon = Upsilon.newBuilder().build();
 
+        //will block the thread until the tasks are all processed under
+        upsilon.upgrade().get();
     }
 }
 ```
 
-WIP
+A more complex example using S3 as the lock and version store implementation.
+
+```java
+public class HealthCheck {
+
+    boolean ready() {
+        StaticCredentialsProvider provider = new StaticCredentialsProvider(
+                                                new AwsCredentials("<key>", "<secret>"));
+
+        //lets store our locks and versions in s3 as a means of persistance
+        S3Store store = new S3Store(provider, "abc-company-services-bucket", "myservice.version");
+        S3Lock lock = new S3Lock(provider, "abc-company-services-bucket", "myservice.lock");
+
+        //default Upsilon setup, pulling tasks from 'tasks.up'
+        Upsilon upsilon = Upsilon.newBuilder()
+                            .lock(lock)
+                            .store(store)
+                            .build();
+
+        //this will lock the service using s3, then run the upgrade tasks, updating the version in s3 to the newest
+        upsilon.upgrade().get();
+    }
+}
+```
