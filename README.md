@@ -1,4 +1,4 @@
-![logo.up][upsilon.jpg]
+![logo.up][https://github.com/VEVO/upsilon/blob/master/upsilon.jpg]
 
 # Upsilon
 Upgrade all the things
