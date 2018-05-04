@@ -135,8 +135,7 @@ on the tasks constructor, to automatically load a constructor argument dependenc
 Injected dependencies _MUST_ be registered using the `Upsilon` builder method `dependencies`,
 with a `com.vevo.upsilon.di.Dependencies` object passed as an argument.  For example:
 
-```
-
+```java
 Upsilon upsilon = Upsilon.newBuilder()
     .register(new Dependencies() {
 
@@ -150,7 +149,7 @@ Upsilon upsilon = Upsilon.newBuilder()
 ```
 
 A task that utilizes these dependencies might look something like this:
-```
+```java
 public class DataMigrationTask implements Task {
 
     private final MySQLHelper sqlHelper;
