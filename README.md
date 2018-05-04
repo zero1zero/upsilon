@@ -1,3 +1,5 @@
+![logo.up][upsilon.jpg]
+
 # Upsilon
 Upgrade all the things
 
