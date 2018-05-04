@@ -64,6 +64,7 @@ It is through this mechanism that once the canary node has executed our upgrade 
 nodes in the cluster have to do the same work multiple times.
 
 ## Usage
+### Upsilon
 For the purposes of example usage, we are going to assume you have a health check
 endpoint with a simple `ready()` method.
 
@@ -108,5 +109,66 @@ public class HealthCheck {
         //this will lock the service using s3, then run the upgrade tasks, updating the version in s3 to the newest
         upsilon.upgrade().get();
     }
+}
+```
+
+### Tasks
+Tasks define the unit of work to be processed before a service can be upgraded
+to its next version. Every task is an implementation of `com.vevo.upsilon.task.Task`.
+
+Task objects have two methods: `upgrade` and `rollback`.
+
+The `upgrade` method returns _only_ when the upgrade task has finished
+its work.
+
+In the event of a failure, the `rollback` method is called to undo
+any work that the upgrade task has done.
+
+*Both methods should be idempotent*.
+
+### Dependencies
+When tasks require outside dependencies, they may use the `@Inject` annotation
+on the tasks constructor, to automatically load a constructor argument dependency.
+
+Injected dependencies _MUST_ be registered using the `Upsilon` builder method `dependencies`,
+with a `com.vevo.upsilon.di.Dependencies` object passed as an argument.  For example:
+
+```
+
+Upsilon upsilon = Upsilon.newBuilder()
+    .register(new Dependencies() {
+
+        @Override
+        public void configure() {
+            bind(new MySQLHelper());
+            bind(new MyShinyDep());
+        }
+    })
+    .build();
+```
+
+A task that utilizes these dependencies might look something like this:
+```
+public class DataMigrationTask implements Task {
+
+    private final MySQLHelper sqlHelper;
+    private final MyShinyDep shinyDep;
+
+    @Inject
+    public DataMigrationTask(MySQLHelper sqlHelper, MyShinyDep shinyDep) {
+        this.sqlHelper = sqlHelper;
+        this.shinyDep = shinyDep;
+    }
+
+    @Override
+    public void upgrade() {
+        //work
+    }
+
+    @Override
+    public void rollback() {
+        //rollback
+    }
+
 }
 ```
