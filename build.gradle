@@ -4,13 +4,18 @@ plugins {
 
 group 'com.vevo.upsilon'
 
-apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'maven-publish'
+apply plugin: 'maven'
+
+afterReleaseBuild.dependsOn uploadArchives
+
 
 sourceCompatibility = 1.8
 
-afterReleaseBuild.dependsOn uploadArchives
+apply plugin: 'maven-publish'
+apply plugin: 'maven'
+apply plugin: 'java'
 
 repositories {
     mavenLocal()
@@ -20,12 +25,8 @@ repositories {
     }
 }
 
-dependencies {
-    compile 'org.slf4j:slf4j-api:1.7.22'
-
-    testCompile 'org.testng:testng:6.10'
-    testCompile 'org.mockito:mockito-core:2.5.4'
-    testCompile 'org.slf4j:slf4j-simple:1.7.22'
+build {
+    dependsOn publishToMavenLocal
 }
 
 publishing {
@@ -43,8 +44,15 @@ task sourceJar(type: Jar) {
     classifier "sources"
 }
 
-test {
-    useTestNG()
+dependencies {
+    compile project(':core')
+    compile project(':ext:s3')
+
+    compile 'org.slf4j:slf4j-api:1.7.22'
+
+    testCompile 'org.testng:testng:6.10'
+    testCompile 'org.mockito:mockito-core:2.5.4'
+    testCompile 'org.slf4j:slf4j-simple:1.7.22'
 }
 
 artifacts {
@@ -52,8 +60,8 @@ artifacts {
     archives file("ext/s3/build/libs/s3-${version}.jar")
 }
 
-build {
-    dependsOn publishToMavenLocal
+test {
+    useTestNG()
 }
 
 // All of this can maybe go away if https://issues.gradle.org/browse/GRADLE-2365 gets solved
