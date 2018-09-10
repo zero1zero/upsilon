@@ -10,12 +10,7 @@ apply plugin: 'maven'
 
 afterReleaseBuild.dependsOn uploadArchives
 
-
 sourceCompatibility = 1.8
-
-apply plugin: 'maven-publish'
-apply plugin: 'maven'
-apply plugin: 'java'
 
 repositories {
     mavenLocal()
@@ -40,19 +35,25 @@ build {
     dependsOn publishToMavenLocal
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'maven'
 
-            artifact sourceJar
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+
+                artifact sourceJar
+            }
         }
     }
-}
 
-task sourceJar(type: Jar) {
-    from sourceSets.main.allJava
-    classifier "sources"
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+        classifier "sources"
+    }
 }
 
 artifacts {
