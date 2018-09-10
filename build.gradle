@@ -1,18 +1,90 @@
-group 'com.vevo.upsilon'
-version '1.0-SNAPSHOT'
+plugins {
+    id 'net.researchgate.release' version '2.6.0'
+}
 
+group 'com.vevo.upsilon'
+
+apply plugin: 'maven'
 apply plugin: 'java'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.8
+
+afterReleaseBuild.dependsOn uploadArchives
 
 repositories {
     mavenLocal()
     mavenCentral()
+    maven {
+        url "https://nexus.vevodev.com/content/repositories/releases/"
+    }
 }
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.22'
+
     testCompile 'org.testng:testng:6.10'
     testCompile 'org.mockito:mockito-core:2.5.4'
     testCompile 'org.slf4j:slf4j-simple:1.7.22'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourceJar
+        }
+    }
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier "sources"
+}
+
+test {
+    useTestNG()
+}
+
+def jarFile = file("build/libs/genesisGradlePlugin-${version}.jar")
+
+artifacts {
+    archives jarFile
+}
+
+build {
+    dependsOn publishToMavenLocal
+}
+
+// All of this can maybe go away if https://issues.gradle.org/browse/GRADLE-2365 gets solved
+def getCreds = { id ->
+    def username = System.getenv("NEXUS_USER")
+    def password = System.getenv("NEXUS_PASSWORD")
+
+    if (!(username && password && username.trim() && password.trim())) {
+        File mavenSettings = new File("${System.properties['user.home']}/.m2/settings.xml")
+        if (mavenSettings.exists()) {
+            def xmlSlurper = new XmlSlurper()
+            def settings = xmlSlurper.parse(mavenSettings)
+            username = settings.servers.children().find { it.id == id }.username
+            password = settings.servers.children().find { it.id == id }.password
+        }
+    }
+
+    [username: username, password: password]
+}
+
+def releaseCreds = getCreds('releases')
+def snapshotsCreds = getCreds('snapshots')
+
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: "http://nexus.vevodev.com/content/repositories/releases") {
+            authentication(userName: "${releaseCreds.username}", password: "${releaseCreds.password}")
+        }
+        snapshotRepository(url: "http://nexus.vevodev.com/content/repositories/snapshots") {
+            authentication(userName: "${snapshotsCreds.username}", password: "${snapshotsCreds.password}")
+        }
+    }
 }

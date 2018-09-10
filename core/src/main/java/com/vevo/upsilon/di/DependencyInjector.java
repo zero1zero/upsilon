@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- * Incredibly/intentionally rudimentary dependency injector
+ * Intentionally rudimentary dependency injector
  */
 public class DependencyInjector {
 

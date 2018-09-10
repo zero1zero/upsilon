@@ -170,6 +170,5 @@ public class DataMigrationTask implements Task {
     public void rollback() {
         //rollback
     }
-
 }
 ```
