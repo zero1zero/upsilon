@@ -35,25 +35,20 @@ build {
     dependsOn publishToMavenLocal
 }
 
-allprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven-publish'
-    apply plugin: 'maven'
 
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
 
-                artifact sourceJar
-            }
+            artifact sourceJar
         }
     }
+}
 
-    task sourceJar(type: Jar) {
-        from sourceSets.main.allJava
-        classifier "sources"
-    }
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier "sources"
 }
 
 artifacts {

@@ -1,4 +1,5 @@
 group 'com.vevo'
+version parent.version
 
 apply plugin: 'java'
 

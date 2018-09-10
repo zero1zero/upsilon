@@ -1,5 +1,5 @@
 group 'com.vevo.upsilon.ext'
-version '1.0-SNAPSHOT'
+version parent.version
 
 apply plugin: 'java'
 
