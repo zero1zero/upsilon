@@ -47,10 +47,9 @@ test {
     useTestNG()
 }
 
-def jarFile = file("build/libs/genesisGradlePlugin-${version}.jar")
-
 artifacts {
-    archives jarFile
+    archives file("core/build/libs/core-${version}.jar")
+    archives file("ext/s3/build/libs/s3-${version}.jar")
 }
 
 build {
