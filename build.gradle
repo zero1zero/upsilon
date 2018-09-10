@@ -25,6 +25,17 @@ repositories {
     }
 }
 
+dependencies {
+    compile project(':core')
+    compile project(':ext:s3')
+
+    compile 'org.slf4j:slf4j-api:1.7.22'
+
+    testCompile 'org.testng:testng:6.10'
+    testCompile 'org.mockito:mockito-core:2.5.4'
+    testCompile 'org.slf4j:slf4j-simple:1.7.22'
+}
+
 build {
     dependsOn publishToMavenLocal
 }
@@ -42,17 +53,6 @@ publishing {
 task sourceJar(type: Jar) {
     from sourceSets.main.allJava
     classifier "sources"
-}
-
-dependencies {
-    compile project(':core')
-    compile project(':ext:s3')
-
-    compile 'org.slf4j:slf4j-api:1.7.22'
-
-    testCompile 'org.testng:testng:6.10'
-    testCompile 'org.mockito:mockito-core:2.5.4'
-    testCompile 'org.slf4j:slf4j-simple:1.7.22'
 }
 
 artifacts {
