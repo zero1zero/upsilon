@@ -23,7 +23,7 @@ allprojects {
         mavenLocal()
         mavenCentral()
         maven {
-            url "https://nexus.vevodev.com/content/repositories/releases/"
+            url "http://nexus.vevodev.com/content/repositories/releases/"
         }
         jcenter()
     }
