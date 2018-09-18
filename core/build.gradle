@@ -1,5 +1,4 @@
 group 'com.vevo.upsilon'
-version '1.0-SNAPSHOT'
 
 dependencies {
     compile 'com.google.guava:guava:26.0-jre'
