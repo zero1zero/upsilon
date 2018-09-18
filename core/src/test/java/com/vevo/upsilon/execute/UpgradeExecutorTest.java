@@ -1,6 +1,7 @@
 package com.vevo.upsilon.execute;
 
 import com.beust.jcommander.internal.Lists;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.vevo.upsilon.store.Store;
 import com.vevo.upsilon.store.Version;
 import com.vevo.upsilon.task.TasksBlock;
@@ -9,6 +10,7 @@ import com.vevo.upsilon.task.TasksHolderTest;
 import org.testng.annotations.Test;
 
 import java.util.Optional;
+import java.util.concurrent.Executors;
 
 import static com.vevo.upsilon.task.TasksHolderTest.mockTasks;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,7 +36,7 @@ public class UpgradeExecutorTest {
         TasksHolder tasksHolder = mock(TasksHolder.class);
         when(tasksHolder.getTasksBlocks()).thenReturn(Lists.newArrayList(tasksBlock));
 
-        UpgradeExecutor executor = UpgradeExecutor.create(store, tasksHolder);
+        UpgradeExecutor executor = UpgradeExecutor.create(store, tasksHolder, MoreExecutors.newDirectExecutorService());
         executor.execute();
 
         verify(store).getVersion();
@@ -57,7 +59,7 @@ public class UpgradeExecutorTest {
 
         TasksHolder tasksHolder = new TasksHolder(Lists.newArrayList(tasksBlock1, tasksBlock2));
 
-        UpgradeExecutor executor = UpgradeExecutor.create(store, tasksHolder);
+        UpgradeExecutor executor = UpgradeExecutor.create(store, tasksHolder, MoreExecutors.newDirectExecutorService());
         executor.execute();
 
         verify(store).getVersion();
@@ -88,7 +90,7 @@ public class UpgradeExecutorTest {
 
         TasksHolder tasksHolder = new TasksHolder(Lists.newArrayList(tasksBlock1, tasksBlock2));
 
-        UpgradeExecutor executor = UpgradeExecutor.create(store, tasksHolder);
+        UpgradeExecutor executor = UpgradeExecutor.create(store, tasksHolder, MoreExecutors.newDirectExecutorService());
         executor.execute();
 
         verify(store).getVersion();
@@ -116,7 +118,7 @@ public class UpgradeExecutorTest {
         //fail the T2 task
         ((TasksHolderTest.T2)tasksBlock1.getTasks().get(1)).failUpgrade = true;
 
-        UpgradeExecutor executor = UpgradeExecutor.create(store, tasksHolder);
+        UpgradeExecutor executor = UpgradeExecutor.create(store, tasksHolder, MoreExecutors.newDirectExecutorService());
         executor.execute();
 
         verify(store).getVersion();
@@ -146,7 +148,7 @@ public class UpgradeExecutorTest {
         //fail the T2 task
         ((TasksHolderTest.T2)tasksBlock1.getTasks().get(1)).failUpgrade = true;
 
-        UpgradeExecutor executor = UpgradeExecutor.create(store, tasksHolder);
+        UpgradeExecutor executor = UpgradeExecutor.create(store, tasksHolder, MoreExecutors.newDirectExecutorService());
         executor.execute();
 
         verify(store).getVersion();

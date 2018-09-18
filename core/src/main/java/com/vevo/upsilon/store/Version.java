@@ -1,5 +1,7 @@
 package com.vevo.upsilon.store;
 
+import static java.util.Objects.requireNonNull;
+
 public class Version {
 
     private String id;
@@ -9,15 +11,11 @@ public class Version {
     }
 
     private Version(String id) {
-        this.id = id;
+        this.id = requireNonNull(id);
     }
 
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     @Override

@@ -2,7 +2,7 @@ include 'core',
         'test',
         'ext:redis',
         'ext:s3',
-        'ext:dynamodb'
+        'ext:dynamodb',
+        'ext:jdbc'
 
 rootProject.name = 'upsilon'
-

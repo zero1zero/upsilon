@@ -23,15 +23,24 @@ public class UpgradeExecutor {
     private final TasksHolder tasksHolder;
     private final Store store;
 
-    private final ExecutorService taskExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "UpsilonUpgradeExecutor"));
+    private final ExecutorService taskExecutor;
 
     public static UpgradeExecutor create(Store store, TasksHolder tasksHolder) {
         return new UpgradeExecutor(tasksHolder, store);
     }
 
+    static UpgradeExecutor create(Store store, TasksHolder tasksHolder, ExecutorService executorService) {
+        return new UpgradeExecutor(tasksHolder, store, executorService);
+    }
+
     private UpgradeExecutor(TasksHolder tasksHolder, Store store) {
+        this(tasksHolder, store, Executors.newSingleThreadExecutor(r -> new Thread(r, "UpsilonUpgradeExecutor")));
+    }
+
+    private UpgradeExecutor(TasksHolder tasksHolder, Store store, ExecutorService executorService) {
         this.tasksHolder = tasksHolder;
         this.store = store;
+        this.taskExecutor = executorService;
     }
 
     public CompletableFuture<UpgradeStatus> execute() {

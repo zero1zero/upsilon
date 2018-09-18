@@ -1,19 +1,8 @@
 group 'com.vevo.upsilon'
-version '1.0-SNAPSHOT'
-
-apply plugin: 'java'
-
-sourceCompatibility = 1.8
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
+version 0.1
 
 dependencies {
     testCompile project(':core')
-
     testCompile project(':ext:s3')
-
-    testCompile 'org.testng:testng:6.10'
+    testCompile project(':ext:jdbc')
 }

@@ -28,6 +28,18 @@ allprojects {
         jcenter()
     }
 
+    test {
+        useTestNG()
+    }
+
+    dependencies {
+        compile 'org.slf4j:slf4j-api:1.7.22'
+
+        testCompile 'org.testng:testng:6.10'
+        testCompile 'org.mockito:mockito-core:2.5.4'
+        testCompile 'org.slf4j:slf4j-simple:1.7.22'
+    }
+
     task sourceJar(type: Jar) {
         from sourceSets.main.allJava
         classifier "sources"
@@ -77,18 +89,6 @@ allprojects {
 }
 
 dependencies {
-    compile project(':core')
-    compile project(':ext:s3')
-
-    compile 'org.slf4j:slf4j-api:1.7.22'
-
-    testCompile 'org.testng:testng:6.10'
-    testCompile 'org.mockito:mockito-core:2.5.4'
-    testCompile 'org.slf4j:slf4j-simple:1.7.22'
+    testCompile project(':core')
+    testCompile project(':ext:s3')
 }
-
-test {
-    useTestNG()
-}
-
-

@@ -5,6 +5,7 @@ import com.vevo.upsilon.store.Version;
 import software.amazon.awssdk.auth.AwsCredentialsProvider;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.sync.RequestBody;
@@ -44,15 +45,10 @@ public class S3Store implements Store {
 
             Version version = client.getObject(gor, (response, inputStream) -> Version.from(IoUtils.toString(inputStream)));
 
-            return Optional.of(version);
-        } catch (S3Exception e) {
-
+            return Optional.ofNullable(version);
+        } catch (NoSuchKeyException e) {
             //if no version file, indicate it hasnt been set
-            if (e.getStatusCode() == 404) {
-                return Optional.empty();
-            }
-
-            throw e;
+            return Optional.empty();
         } finally {
             lock.readLock().unlock();
         }

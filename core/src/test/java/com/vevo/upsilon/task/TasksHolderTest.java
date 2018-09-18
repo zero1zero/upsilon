@@ -121,6 +121,7 @@ public class TasksHolderTest {
         assertEquals(Iterables.get(restOfTasks, 1).getVersion().getId(), "1.3");
     }
 
+    @SafeVarargs
     public static TasksBlock mockTasks(String id, Class<? extends Task> ... tasks) {
         TasksBlock tb= mock(TasksBlock.class);
         when(tb.getVersion()).thenReturn(Version.from(id));
