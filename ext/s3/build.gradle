@@ -1,13 +1,9 @@
 group 'com.vevo.upsilon.ext'
-version parent.version
+version 0.1
 
 apply plugin: 'java'
 
 sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     compile project(':core')
