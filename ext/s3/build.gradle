@@ -1,7 +1,8 @@
 group 'com.vevo.upsilon.ext'
 
 dependencies {
-    compile project(':core')
+    compile 'com.vevo.upsilon:core:0.1'
 
+    testCompile project(':core')
     compile 'software.amazon.awssdk:s3:2.0.0-preview-1'
 }
