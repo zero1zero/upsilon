@@ -46,6 +46,11 @@ subprojects {
         jcenter()
     }
 
+    release {
+        failOnCommitNeeded = false
+        failOnUnversionedFiles = false
+    }
+
     test {
         useTestNG()
     }
