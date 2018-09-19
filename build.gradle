@@ -2,7 +2,6 @@ plugins {
     id 'net.researchgate.release' version '2.7.0'
     id 'maven-publish'
     id 'maven'
-    id 'java'
 }
 
 group 'com.vevo.upsilon'
@@ -67,11 +66,11 @@ publishing {
     publications {
         core(MavenPublication) {
             artifactId 'core'
-            artifact 'core/build/libs/core-' + version + '.jar'
+            artifact file('core/build/libs/core-' + version + '.jar')
         }
         s3(MavenPublication) {
             artifactId 's3'
-            artifact 'ext/s3/build/libs/s3-' + version + '.jar'
+            artifact file('ext/s3/build/libs/s3-' + version + '.jar')
         }
     }
 }
