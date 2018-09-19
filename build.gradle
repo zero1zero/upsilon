@@ -2,6 +2,7 @@ plugins {
     id 'net.researchgate.release' version '2.7.0'
     id 'maven-publish'
     id 'maven'
+    id 'java'
 }
 
 group 'com.vevo.upsilon'
@@ -53,6 +54,8 @@ afterReleaseBuild.dependsOn uploadArchives
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            from components.java
+
             artifact 'core/build/libs/core-' + project.version + '.jar'
             artifact 'core/build/libs/core-' + project.version + '-sources.jar'
         }
