@@ -21,10 +21,6 @@ subprojects {
         jcenter()
     }
 
-    jar {
-        baseName = name
-    }
-
     build {
         dependsOn publishToMavenLocal
     }
@@ -83,9 +79,6 @@ publishing {
             artifact 'ext/s3/build/libs/s3-' + project.version + '.jar'
         }
     }
-}
-
-publishing {
     repositories {
         maven {
             url "http://nexus.vevodev.com/content/repositories/releases/"
