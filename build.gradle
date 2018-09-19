@@ -54,7 +54,8 @@ publishing {
         mavenJava(MavenPublication) {
             artifactId 'core'
 
-            artifact 'core/build/libs/core-' + project.version + '.jar'
+            artifact source: 'core/build/libs/core-' + project.version + '.jar', classifier: 'jar'
+//            artifact 'core/build/libs/core-' + project.version + '.jar'
             artifact 'core/build/libs/core-' + project.version + '-sources.jar'
         }
     }
