@@ -10,7 +10,6 @@ import com.vevo.upsilon.task.TasksHolderTest;
 import org.testng.annotations.Test;
 
 import java.util.Optional;
-import java.util.concurrent.Executors;
 
 import static com.vevo.upsilon.task.TasksHolderTest.mockTasks;
 import static org.mockito.ArgumentMatchers.eq;
