@@ -20,6 +20,10 @@ subprojects {
         jcenter()
     }
 
+    jar {
+        baseName = name
+    }
+
     build {
         dependsOn publishToMavenLocal
     }
@@ -66,11 +70,13 @@ publishing {
     publications {
         core(MavenPublication) {
             artifactId 'core'
-            artifact file('core/build/libs/core-' + version + '.jar')
+            artifact 'core/build/libs/core-' + version + '.jar'
         }
+
         s3(MavenPublication) {
             artifactId 's3'
-            artifact file('ext/s3/build/libs/s3-' + version + '.jar')
+            groupId 'com.vevo.upsilon.ext'
+            artifact 'ext/s3/build/libs/s3-' + version + '.jar'
         }
     }
 }
