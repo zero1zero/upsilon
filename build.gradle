@@ -4,7 +4,17 @@ plugins {
 
 group 'com.vevo.upsilon'
 
+release {
+    failOnCommitNeeded = false
+    failOnUnversionedFiles = false
+}
+
 task build{}
+task uploadLibraries {}
+afterReleaseBuild.dependsOn uploadLibraries
+
+uploadLibraries.dependsOn ':core:publish'
+uploadLibraries.dependsOn ':ext:s3:publish'
 
 // All of this can maybe go away if https://issues.gradle.org/browse/GRADLE-2365 gets solved
 def getCreds = { id ->
@@ -82,71 +92,4 @@ subprojects {
             }
         }
     }
-
-// All of this can maybe go away if https://issues.gradle.org/browse/GRADLE-2365 gets solved
-//    def getCreds = { id ->
-//        def username = System.getenv("NEXUS_USER")
-//        def password = System.getenv("NEXUS_PASSWORD")
-//
-//        if (!(username && password && username.trim() && password.trim())) {
-//            File mavenSettings = new File("${System.properties['user.home']}/.m2/settings.xml")
-//            if (mavenSettings.exists()) {
-//                def xmlSlurper = new XmlSlurper()
-//                def settings = xmlSlurper.parse(mavenSettings)
-//                username = settings.servers.children().find { it.id == id }.username
-//                password = settings.servers.children().find { it.id == id }.password
-//            }
-//        }
-//
-//        [username: username, password: password]
-//    }
-
-//    def releaseCreds = getCreds('releases')
-//    def snapshotsCreds = getCreds('snapshots')
-
-//    uploadArchives {
-//        repositories.mavenDeployer {
-//            repository(url: "http://nexus.vevodev.com/content/repositories/releases") {
-//                authentication(userName: "${releaseCreds.username}", password: "${releaseCreds.password}")
-//            }
-//            snapshotRepository(url: "http://nexus.vevodev.com/content/repositories/snapshots") {
-//                authentication(userName: "${snapshotsCreds.username}", password: "${snapshotsCreds.password}")
-//            }
-//
-////        addFilter('core') {artifact, file ->
-////            artifact.name == 'core'
-////        }
-////        addFilter('s3') {artifact, file ->
-////            artifact.name == 's3'
-////            artifact.group == 'com.vevo.upsilon.ext'
-////        }
-//        }
-//    }
 }
-
-release {
-    failOnCommitNeeded = false
-    failOnUnversionedFiles = false
-}
-
-task uploadLibraries {}
-afterReleaseBuild.dependsOn uploadLibraries
-
-uploadLibraries.dependsOn ':core:publish'
-uploadLibraries.dependsOn ':ext:s3:publish'
-
-
-
-//artifacts {
-//    archives file: file('core/build/libs/core-0.1-SNAPSHOT.jar'), name: 'core', type: 'jar'
-//    archives file: file('ext/s3/build/libs/s3-0.1-SNAPSHOT.jar'), name: 's3', type: 'jar'
-//}
-
-//publishing {
-//    publications {
-//        maven(MavenPublication) {
-//            from components.java
-//        }
-//    }
-//}
-
