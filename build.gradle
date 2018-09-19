@@ -50,16 +50,31 @@ release {
 
 afterReleaseBuild.dependsOn uploadArchives
 
+//artifacts {
+//    core file("core/build/libs/core-${version}-SNAPSHOT.jar")
+//    s3 file("ext/s3/build/libs/s3-${version}-SNAPSHOT.jar")
+//}
+
 publishing {
     publications {
+//        mavenJava(MavenPublication) {
+//            artifactId 'core'
+//            artifact("core/build/libs/core-${version}.jar") {
+//                classifier 'jar'
+//            }
+//        }
         mavenJava(MavenPublication) {
-            from components.java
-            artifactId 'core'
-
-            artifact source: 'core/build/libs/core-' + project.version + '.jar', classifier: 'jar'
-//            artifact 'core/build/libs/core-' + project.version + '.jar'
-            artifact 'core/build/libs/core-' + project.version + '-sources.jar'
+            groupId 'com.vevo.upsilon.ext'
+            artifactId 's3'
+            artifact("ext/s3/build/libs/s3-${version}.jar") {
+                classifier 'jar'
+            }
         }
+//            artifactId 'core'
+//
+//            artifact source: 'core/build/libs/core-' + project.version + '.jar', classifier: 'jar'
+////            artifact 'core/build/libs/core-' + project.version + '.jar'
+//            artifact 'core/build/libs/core-' + project.version + '-sources.jar'
     }
 }
 
