@@ -1,14 +1,15 @@
 plugins {
     id 'net.researchgate.release' version '2.7.0'
-    id 'maven-publish'
-    id 'maven'
-    id 'java'
 }
 
 group 'com.vevo.upsilon'
 
+task build{}
+
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'maven'
 
     sourceCompatibility = 1.8
 
@@ -41,6 +42,56 @@ subprojects {
         from sourceSets.main.allJava
         classifier "sources"
     }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+
+                artifact sourceJar
+            }
+        }
+    }
+
+// All of this can maybe go away if https://issues.gradle.org/browse/GRADLE-2365 gets solved
+    def getCreds = { id ->
+        def username = System.getenv("NEXUS_USER")
+        def password = System.getenv("NEXUS_PASSWORD")
+
+        if (!(username && password && username.trim() && password.trim())) {
+            File mavenSettings = new File("${System.properties['user.home']}/.m2/settings.xml")
+            if (mavenSettings.exists()) {
+                def xmlSlurper = new XmlSlurper()
+                def settings = xmlSlurper.parse(mavenSettings)
+                username = settings.servers.children().find { it.id == id }.username
+                password = settings.servers.children().find { it.id == id }.password
+            }
+        }
+
+        [username: username, password: password]
+    }
+
+    def releaseCreds = getCreds('releases')
+    def snapshotsCreds = getCreds('snapshots')
+
+    uploadArchives {
+        repositories.mavenDeployer {
+            repository(url: "http://nexus.vevodev.com/content/repositories/releases") {
+                authentication(userName: "${releaseCreds.username}", password: "${releaseCreds.password}")
+            }
+            snapshotRepository(url: "http://nexus.vevodev.com/content/repositories/snapshots") {
+                authentication(userName: "${snapshotsCreds.username}", password: "${snapshotsCreds.password}")
+            }
+
+//        addFilter('core') {artifact, file ->
+//            artifact.name == 'core'
+//        }
+//        addFilter('s3') {artifact, file ->
+//            artifact.name == 's3'
+//            artifact.group == 'com.vevo.upsilon.ext'
+//        }
+        }
+    }
 }
 
 release {
@@ -48,7 +99,13 @@ release {
     failOnUnversionedFiles = false
 }
 
-afterReleaseBuild.dependsOn uploadArchives
+task uploadLibraries {}
+afterReleaseBuild.dependsOn uploadLibraries
+
+uploadLibraries.dependsOn ':core:publish'
+uploadLibraries.dependsOn ':ext:s3:publish'
+
+
 
 //artifacts {
 //    archives file: file('core/build/libs/core-0.1-SNAPSHOT.jar'), name: 'core', type: 'jar'
@@ -63,69 +120,3 @@ afterReleaseBuild.dependsOn uploadArchives
 //    }
 //}
 
-publishing {
-    publications {
-        root(MavenPublication) {
-            from components.java
-        }
-
-        core(MavenPublication) {
-            artifactId 'core'
-            groupId 'com.vevo.upsilon'
-            version project.version
-            artifact 'core/build/libs/core-' + project.version + '.jar'
-        }
-
-        s3(MavenPublication) {
-            artifactId 's3'
-            groupId 'com.vevo.upsilon.ext'
-            version project.version
-            artifact 'ext/s3/build/libs/s3-' + project.version + '.jar'
-        }
-    }
-    repositories {
-        maven {
-            url "http://nexus.vevodev.com/content/repositories/releases/"
-        }
-    }
-}
-
-// All of this can maybe go away if https://issues.gradle.org/browse/GRADLE-2365 gets solved
-def getCreds = { id ->
-    def username = System.getenv("NEXUS_USER")
-    def password = System.getenv("NEXUS_PASSWORD")
-
-    if (!(username && password && username.trim() && password.trim())) {
-        File mavenSettings = new File("${System.properties['user.home']}/.m2/settings.xml")
-        if (mavenSettings.exists()) {
-            def xmlSlurper = new XmlSlurper()
-            def settings = xmlSlurper.parse(mavenSettings)
-            username = settings.servers.children().find { it.id == id }.username
-            password = settings.servers.children().find { it.id == id }.password
-        }
-    }
-
-    [username: username, password: password]
-}
-
-def releaseCreds = getCreds('releases')
-def snapshotsCreds = getCreds('snapshots')
-
-uploadArchives {
-    repositories.mavenDeployer {
-        repository(url: "http://nexus.vevodev.com/content/repositories/releases") {
-            authentication(userName: "${releaseCreds.username}", password: "${releaseCreds.password}")
-        }
-        snapshotRepository(url: "http://nexus.vevodev.com/content/repositories/snapshots") {
-            authentication(userName: "${snapshotsCreds.username}", password: "${snapshotsCreds.password}")
-        }
-
-//        addFilter('core') {artifact, file ->
-//            artifact.name == 'core'
-//        }
-//        addFilter('s3') {artifact, file ->
-//            artifact.name == 's3'
-//            artifact.group == 'com.vevo.upsilon.ext'
-//        }
-    }
-}
