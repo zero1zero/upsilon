@@ -4,5 +4,5 @@ public interface Task {
 
     void upgrade() throws Exception;
 
-    void rollback();
+    void rollback() throws Exception;
 }

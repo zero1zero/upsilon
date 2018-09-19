@@ -4,37 +4,12 @@ plugins {
 
 group 'com.vevo.upsilon'
 
-release {
-    failOnCommitNeeded = false
-    failOnUnversionedFiles = false
-}
-
+//dummy build task for root due to https://github.com/researchgate/gradle-release/issues/186
 task build{}
-task uploadLibraries {}
-afterReleaseBuild.dependsOn uploadLibraries
 
-uploadLibraries.dependsOn ':core:publish'
-uploadLibraries.dependsOn ':ext:s3:publish'
-
-// All of this can maybe go away if https://issues.gradle.org/browse/GRADLE-2365 gets solved
-def getCreds = { id ->
-    def username = System.getenv("NEXUS_USER")
-    def password = System.getenv("NEXUS_PASSWORD")
-
-    if (!(username && password && username.trim() && password.trim())) {
-        File mavenSettings = new File("${System.properties['user.home']}/.m2/settings.xml")
-        if (mavenSettings.exists()) {
-            def xmlSlurper = new XmlSlurper()
-            def settings = xmlSlurper.parse(mavenSettings)
-            username = settings.servers.children().find { it.id == id }.username
-            password = settings.servers.children().find { it.id == id }.password
-        }
-    }
-
-    [username: username, password: password]
-}
-
-def releaseCreds = getCreds('releases')
+//for each submodule that we want to actually release, add to these depends on
+afterReleaseBuild.dependsOn ':core:publish'
+afterReleaseBuild.dependsOn ':ext:s3:publish'
 
 subprojects {
     apply plugin: 'java'
@@ -72,6 +47,26 @@ subprojects {
         from sourceSets.main.allJava
         classifier "sources"
     }
+
+    // All of this can maybe go away if https://issues.gradle.org/browse/GRADLE-2365 gets solved
+    def getCreds = { id ->
+        def username = System.getenv("NEXUS_USER")
+        def password = System.getenv("NEXUS_PASSWORD")
+
+        if (!(username && password && username.trim() && password.trim())) {
+            File mavenSettings = new File("${System.properties['user.home']}/.m2/settings.xml")
+            if (mavenSettings.exists()) {
+                def xmlSlurper = new XmlSlurper()
+                def settings = xmlSlurper.parse(mavenSettings)
+                username = settings.servers.children().find { it.id == id }.username
+                password = settings.servers.children().find { it.id == id }.password
+            }
+        }
+
+        [username: username, password: password]
+    }
+
+    def releaseCreds = getCreds('releases')
 
     publishing {
         publications {
