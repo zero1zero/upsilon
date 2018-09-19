@@ -12,10 +12,6 @@ subprojects {
 
     sourceCompatibility = 1.8
 
-    build {
-        dependsOn publishToMavenLocal
-    }
-
     repositories {
         mavenLocal()
         mavenCentral()
@@ -23,6 +19,10 @@ subprojects {
             url "http://nexus.vevodev.com/content/repositories/releases/"
         }
         jcenter()
+    }
+
+    build {
+        dependsOn publishToMavenLocal
     }
 
     test {
