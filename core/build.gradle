@@ -1,4 +1,5 @@
 group 'com.vevo.upsilon'
+version = parent.version
 
 dependencies {
     compile 'com.google.guava:guava:26.0-jre'
