@@ -70,13 +70,16 @@ publishing {
     publications {
         core(MavenPublication) {
             artifactId 'core'
-            artifact 'core/build/libs/core-' + version + '.jar'
+            groupId 'com.vevo.upsilon'
+            version project.version
+            artifact 'core/build/libs/core-' + project.version + '.jar'
         }
 
         s3(MavenPublication) {
             artifactId 's3'
             groupId 'com.vevo.upsilon.ext'
-            artifact 'ext/s3/build/libs/s3-' + version + '.jar'
+            version project.version
+            artifact 'ext/s3/build/libs/s3-' + project.version + '.jar'
         }
     }
 }
