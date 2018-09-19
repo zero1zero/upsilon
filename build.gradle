@@ -65,6 +65,10 @@ afterReleaseBuild.dependsOn uploadArchives
 
 publishing {
     publications {
+        root(MavenPublication) {
+            from components.java
+        }
+
         core(MavenPublication) {
             artifactId 'core'
             groupId 'com.vevo.upsilon'
