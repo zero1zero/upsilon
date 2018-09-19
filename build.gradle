@@ -50,19 +50,31 @@ release {
 
 afterReleaseBuild.dependsOn uploadArchives
 
+artifacts {
+    archives file: file('core/build/libs/core-0.1-SNAPSHOT.jar'), name: 'core', type: 'jar'
+    archives file: file('ext/s3/build/libs/s3-0.1-SNAPSHOT.jar'), name: 's3', type: 'jar'
+}
 
 publishing {
     publications {
-        core(MavenPublication) {
-            artifactId 'core'
-            artifact 'core/build/libs/core-' + version + '.jar'
-        }
-        s3(MavenPublication) {
-            artifactId 's3'
-            artifact 'ext/s3/build/libs/s3-' + version + '.jar'
+        maven(MavenPublication) {
+            from components.java
         }
     }
 }
+
+//publishing {
+//    publications {
+//        core(MavenPublication) {
+//            artifactId 'core'
+//            artifact 'core/build/libs/core-' + version + '.jar'
+//        }
+//        s3(MavenPublication) {
+//            artifactId 's3'
+//            artifact 'ext/s3/build/libs/s3-' + version + '.jar'
+//        }
+//    }
+//}
 
 // All of this can maybe go away if https://issues.gradle.org/browse/GRADLE-2365 gets solved
 def getCreds = { id ->
@@ -92,6 +104,13 @@ uploadArchives {
         }
         snapshotRepository(url: "http://nexus.vevodev.com/content/repositories/snapshots") {
             authentication(userName: "${snapshotsCreds.username}", password: "${snapshotsCreds.password}")
+        }
+
+        addFilter('core') {artifact, file ->
+            artifact.name == 'core'
+        }
+        addFilter('s3') {artifact, file ->
+            artifact.name == 's3'
         }
     }
 }
