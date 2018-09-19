@@ -97,7 +97,8 @@ allprojects {
 }
 
 dependencies {
-    testCompile project(':core')
-    testCompile project(':ext:s3')
-    testCompile project(':ext:jdbc')
+    compile project(':core')
+    compile project(':test')
+    compile project(':ext:s3')
+    compile project(':ext:jdbc')
 }
