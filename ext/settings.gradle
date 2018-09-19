@@ -2,3 +2,5 @@ include 'redis',
         's3',
         'dynamodb',
         'jdbc'
+
+group = 'com.vevo.upsilon'

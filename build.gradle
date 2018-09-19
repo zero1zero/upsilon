@@ -5,11 +5,23 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.researchgate:gradle-release:2.7.0'
+        classpath 'net.researchgate:gradle-release:2.6.0'
     }
 }
 
+apply plugin: 'net.researchgate.release'
+
 group 'com.vevo.upsilon'
+
+release {
+    failOnCommitNeeded = false
+    failOnUnversionedFiles = false
+}
+
+task build {
+    dependsOn 'core:build'
+    dependsOn 'ext:s3:build'
+}
 
 subprojects {
     apply plugin: 'java'
@@ -36,11 +48,6 @@ subprojects {
 
     test {
         useTestNG()
-    }
-
-    release {
-        failOnCommitNeeded = false
-        failOnUnversionedFiles = false
     }
 
     dependencies {
