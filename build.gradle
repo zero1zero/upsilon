@@ -2,6 +2,7 @@ plugins {
     id 'net.researchgate.release' version '2.7.0'
     id 'maven-publish'
     id 'maven'
+    id 'java'
 }
 
 group 'com.vevo.upsilon'
@@ -80,6 +81,14 @@ publishing {
             groupId 'com.vevo.upsilon.ext'
             version project.version
             artifact 'ext/s3/build/libs/s3-' + project.version + '.jar'
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            url "http://nexus.vevodev.com/content/repositories/releases/"
         }
     }
 }
