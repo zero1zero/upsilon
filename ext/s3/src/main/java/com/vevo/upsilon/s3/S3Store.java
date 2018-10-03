@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.sync.RequestBody;
 import software.amazon.awssdk.utils.IoUtils;
 
@@ -15,6 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class S3Store implements Store {
 
+    private static final String NO_SUCH_KEY = "NoSuchKey";
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final S3Client client;
@@ -45,9 +47,12 @@ public class S3Store implements Store {
             Version version = client.getObject(gor, (response, inputStream) -> Version.from(IoUtils.toString(inputStream)));
 
             return Optional.ofNullable(version);
-        } catch (NoSuchKeyException e) {
+        } catch (S3Exception e) {
             //if no version file, indicate it hasnt been set
-            return Optional.empty();
+            if(NO_SUCH_KEY.equalsIgnoreCase(e.getErrorCode()) {
+                return Optional.empty();
+            }
+            throw e;
         } finally {
             lock.readLock().unlock();
         }
