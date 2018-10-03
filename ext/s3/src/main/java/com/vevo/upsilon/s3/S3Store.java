@@ -49,7 +49,7 @@ public class S3Store implements Store {
             return Optional.ofNullable(version);
         } catch (S3Exception e) {
             //if no version file, indicate it hasnt been set
-            if(NO_SUCH_KEY.equalsIgnoreCase(e.getErrorCode()) {
+            if(NO_SUCH_KEY.equalsIgnoreCase(e.getErrorCode()) || e instanceof NoSuchKeyException) {
                 return Optional.empty();
             }
             throw e;
