@@ -1,5 +1,7 @@
 package com.vevo.upsilon;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.vevo.upsilon.di.Dependencies;
 import com.vevo.upsilon.di.DependencyInjector;
@@ -13,6 +15,7 @@ import com.vevo.upsilon.store.Store;
 import com.vevo.upsilon.task.TasksHolder;
 import com.vevo.upsilon.task.load.ClasspathTasksLoader;
 import com.vevo.upsilon.task.load.TasksLoader;
+import com.vevo.upsilon.task.parse.ParsedVersion;
 import com.vevo.upsilon.task.parse.ParsedVersions;
 import com.vevo.upsilon.task.parse.ParsedVersionsLoader;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +30,9 @@ public class Upsilon {
     private UpgradeStatus status = UpgradeStatus.INITIALIZING;
 
     private final Lock lock;
+    private final Store store;
     private final UpgradeExecutor executor;
+    private final ParsedVersions versions;
 
     public static class Builder {
 
@@ -87,6 +92,7 @@ public class Upsilon {
     @SuppressWarnings("unchecked")
     private Upsilon(TasksLoader tasksLoader, Store store, Lock lock, List<Dependencies> depBlocks) {
         this.lock = lock;
+        this.store = store;
 
         DependencyInjector injector = new DependencyInjector();
 
@@ -99,7 +105,7 @@ public class Upsilon {
             }
         }
 
-        ParsedVersions versions = ParsedVersionsLoader.load(tasksLoader);
+        versions = ParsedVersionsLoader.load(tasksLoader);
 
         TasksHolder tasksHolder = TasksHolder.load(versions, injector);
 
@@ -111,6 +117,11 @@ public class Upsilon {
     }
 
     public CompletableFuture<UpgradeStatus> upgrade() {
+
+        if(alreadyUpgraded()) {
+            return CompletableFuture.completedFuture(UpgradeStatus.COMPLETED);
+        }
+
         status = UpgradeStatus.INITIALIZING;
 
         return new UpgradeStatusChecker(lock)
@@ -125,5 +136,15 @@ public class Upsilon {
 
                     return upgradeStatus;
                 });
+    }
+
+    private boolean alreadyUpgraded() {
+        ParsedVersion lastVersion = Iterables.getLast(versions.getVersions());
+
+        if(null == lastVersion || Strings.isNullOrEmpty(lastVersion.getVersion())) {
+            return false;
+        }
+
+        return store.getVersion().filter(version -> version.getId().equals(lastVersion.getVersion())).isPresent();
     }
 }
