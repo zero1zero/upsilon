@@ -57,7 +57,7 @@ public class DependencyInjectorTest {
         assertNotNull(task);
     }
 
-    @Test(expectedExceptions = UpsilonInitializationException.class, expectedExceptionsMessageRegExp = "^Could not find registered dependency for constructor parameter.*")
+    @Test(expectedExceptions = UpsilonInitializationException.class, expectedExceptionsMessageRegExp = "^Could not find registered dependency .*")
     public void oneArgFailNoDep() {
 
         DependencyInjector injector = new DependencyInjector();
