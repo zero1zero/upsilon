@@ -1,1 +1,5 @@
 group 'com.vevo.upsilon.ext'
+
+dependencies {
+    compile 'commons-dbutils:commons-dbutils:1.7'
+}

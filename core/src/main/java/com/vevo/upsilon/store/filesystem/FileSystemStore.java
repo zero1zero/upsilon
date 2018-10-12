@@ -42,7 +42,7 @@ public class FileSystemStore implements Store {
 
         String content;
         try {
-            content = Files.toString(file, Charsets.UTF_8);
+            content = Files.asCharSource(file, Charsets.UTF_8).read();
         } catch (IOException e) {
             throw new UpsilonUpgradeException("There was an issue reading current version", e);
         }
@@ -55,7 +55,7 @@ public class FileSystemStore implements Store {
         String content = VersionSerializer.serialize(version);
 
         try {
-            Files.write(content, this.file, Charsets.UTF_8);
+            Files.asCharSink(this.file, Charsets.UTF_8).write(content);
         } catch (IOException e) {
             throw new UpsilonUpgradeException("There was an issue writing current version", e);
         }

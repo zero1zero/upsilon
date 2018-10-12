@@ -9,6 +9,8 @@ import com.vevo.upsilon.except.UpsilonInitializationException;
 import com.vevo.upsilon.store.Version;
 import com.vevo.upsilon.task.parse.ParsedVersion;
 import com.vevo.upsilon.task.parse.ParsedVersions;
+import com.vevo.upsilon.task.parse.TaskDeclaration;
+import com.vevo.upsilon.task.parse.TaskWParam;
 import org.testng.annotations.Test;
 
 import javax.inject.Inject;
@@ -29,7 +31,7 @@ public class TasksHolderTest {
     public void testLoadTaskClass() {
         ParsedVersion version = mock(ParsedVersion.class);
         when(version.getVersion()).thenReturn("1.1");
-        when(version.getTasks()).thenReturn(Lists.newArrayList("com.vevo.upsilon.task.parse.DummyTask"));
+        when(version.getTasks()).thenReturn(Lists.newArrayList(new TaskDeclaration("com.vevo.upsilon.task.parse.DummyTask")));
 
         ParsedVersions versions = mock(ParsedVersions.class);
         when(versions.getVersions()).thenReturn(Lists.newArrayList(version));
@@ -48,7 +50,7 @@ public class TasksHolderTest {
     public void testLoadFailTaskClass() {
         ParsedVersion version = mock(ParsedVersion.class);
         when(version.getVersion()).thenReturn("1.1");
-        when(version.getTasks()).thenReturn(Lists.newArrayList("com.vevo.upsilon.task.parse.IDontExist"));
+        when(version.getTasks()).thenReturn(Lists.newArrayList(new TaskDeclaration("com.vevo.upsilon.task.parse.IDontExist")));
 
         ParsedVersions versions = mock(ParsedVersions.class);
         when(versions.getVersions()).thenReturn(Lists.newArrayList(version));
@@ -81,7 +83,7 @@ public class TasksHolderTest {
     public void loadClassWithDep() {
         ParsedVersion version = mock(ParsedVersion.class);
         when(version.getVersion()).thenReturn("1.1");
-        when(version.getTasks()).thenReturn(Lists.newArrayList("com.vevo.upsilon.task.TasksHolderTest$TaskWithDep"));
+        when(version.getTasks()).thenReturn(Lists.newArrayList(new TaskDeclaration("com.vevo.upsilon.task.TasksHolderTest$TaskWithDep")));
 
         ParsedVersions versions = mock(ParsedVersions.class);
         when(versions.getVersions()).thenReturn(Lists.newArrayList(version));
@@ -237,5 +239,32 @@ public class TasksHolderTest {
 
         assertEquals(Iterables.get(finalTasks, 0).getClass(), T2.class);
         assertEquals(Iterables.get(finalTasks, 1).getClass(), T1.class);
+    }
+
+    /**
+     * Load a task file with a parameter
+     */
+    @Test
+    public void testTaskWithParam() {
+        TaskDeclaration declaration = new TaskDeclaration("com.vevo.upsilon.task.parse.TaskWParam");
+        declaration.addParam("thing", "a value");
+        declaration.addParam("hello", "flargenstow");
+
+        ParsedVersion version = mock(ParsedVersion.class);
+        when(version.getVersion()).thenReturn("1.1");
+        when(version.getTasks()).thenReturn(Lists.newArrayList(declaration));
+
+        ParsedVersions versions = mock(ParsedVersions.class);
+        when(versions.getVersions()).thenReturn(Lists.newArrayList(version));
+
+        DependencyInjector injector = new DependencyInjector();
+
+        TasksHolder store = TasksHolder.load(versions, injector);
+
+        TasksBlock block = store.getTasksBlocks().iterator().next();
+        TaskWParam task = (TaskWParam) block.getTasks().get(0);
+
+        assertEquals(task.getThing(), "a value");
+        assertEquals(task.getHello(), "flargenstow");
     }
 }

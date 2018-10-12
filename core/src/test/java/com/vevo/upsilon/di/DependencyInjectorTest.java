@@ -1,13 +1,18 @@
 package com.vevo.upsilon.di;
 
+import com.google.common.collect.Maps;
+import com.sun.javafx.tools.packager.Param;
 import com.vevo.upsilon.except.UpsilonInitializationException;
 import com.vevo.upsilon.task.Task;
 import org.testng.annotations.Test;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.concurrent.Callable;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 public class DependencyInjectorTest {
 
@@ -86,6 +91,33 @@ public class DependencyInjectorTest {
         injector.register(new Dep3(), Callable.class); //to test polymorphs
 
         MultiArgTask task = injector.instance(MultiArgTask.class);
+
+        assertNotNull(task);
+    }
+
+    public static class ParamArgTask extends ATask {
+        @Inject
+        public ParamArgTask(Dep dep, String thing, int other) {
+            assertNotNull(dep);
+            assertNotNull(thing);
+            assertEquals(1002, other);
+        }
+    }
+
+    @Test
+    public void paramArgs() {
+
+        DependencyInjector injector = new DependencyInjector();
+        injector.register(new Dep(), Dep.class);
+        injector.register(new Dep1(), Dep1.class); //not needed but to test extras
+        injector.register(new Dep2(), Dep2.class);
+        injector.register(new Dep3(), Callable.class); //to test polymorphs
+
+        HashMap<String, String> params = Maps.newHashMap();
+        params.put("thing", "whatever");
+        params.put("other", String.valueOf(1002));
+
+        ParamArgTask task = injector.instance(ParamArgTask.class, params);
 
         assertNotNull(task);
     }
