@@ -1,5 +1,9 @@
 package com.vevo.upsilon.task.parse;
 
+import com.beust.jcommander.internal.Lists;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.google.common.collect.Maps;
 import org.parboiled.Parboiled;
 import org.parboiled.buffers.IndentDedentInputBuffer;
 import org.parboiled.common.FileUtils;
@@ -7,6 +11,13 @@ import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.StringReader;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -23,85 +34,6 @@ public class ParsedVersionsParserTest {
                 .run(new IndentDedentInputBuffer(value, 2, "#", true));
     }
 
-    @DataProvider(name = "valid_parses")
-    public Object[][] validParsesD() {
-        return new Object[][] {
-                new String[] {"1.1\n  - ATask"},
-                new String[] { "1\n  - ATask" },
-                new String[] { "1.1\n  - ATask" },
-                new String[] { "1.0\n  - ATask" },
-                new String[] { "0.1\n  - ATask" },
-                new String[] { "0.1a\n  - ATask" },
-                new String[] { "20.1\n  - ATask" },
-                new String[] { "20a\n  - ATask" },
-                new String[] { "a1.0\n  - ATask" },
-                new String[] { "a\n  - ATask" },
-                new String[] { "alongversion\n  - ATask" }
-        };
-    }
-
-    @DataProvider(name = "invalid_parses")
-    public Object[][] invalidParsesD() {
-        return new Object[][] {
-                new String[] {"justaversion"},
-                new String[] {"justaversion - ATask?"},
-                new String[] {"justaversion\n"},
-                new String[] {"\n-JustATask"},
-                new String[] { "a\n-com.thing.MyTask" },
-                new String[] { "a\n-com.thing.MyTask" },
-                new String[] { "a\n-com@:#KSLFK" },
-                new String[] { "a\n- " },
-        };
-    }
-
-    @Test(dataProvider = "valid_parses")
-    public void validParses(String value) {
-        assertFalse(run(value).hasErrors());
-    }
-
-    @Test(dataProvider = "invalid_parses")
-    public void invalidParses(String value) {
-        assertTrue(run(value).hasErrors());
-    }
-
-    @Test
-    public void multiSimple() {
-        String block =
-                "1.1\n" +
-                "  - MyTask\n" +
-                "  - MyTask1\n" +
-                "1.2\n" +
-                "  - MyTask2\n" +
-                "  - MyTask3";
-
-        ParsedVersions versions = run(block).resultValue;
-
-        ParsedVersion version1 = versions.getVersions().get(0);
-        assertEquals(version1.getVersion(), "1.1");
-        assertEquals(version1.getTasks().get(0), "MyTask");
-        assertEquals(version1.getTasks().get(1), "MyTask1");
-
-        ParsedVersion version = versions.getVersions().get(1);
-        assertEquals(version.getVersion(), "1.2");
-        assertEquals(version.getTasks().get(0), "MyTask2");
-        assertEquals(version.getTasks().get(1), "MyTask3");
-    }
-
-    @Test
-    public void singleVersion() {
-        String block =
-                "1.1\n" +
-                "  - MyTask\n" +
-                "  - MyTask1\n";
-
-        ParsedVersions versions = run(block).resultValue;
-
-        ParsedVersion version = versions.getVersions().get(0);
-        assertEquals(version.getVersion(), "1.1");
-        assertEquals(version.getTasks().get(0), "MyTask");
-        assertEquals(version.getTasks().get(1), "MyTask1");
-    }
-
     @Test
     public void sampleFile() {
         String file = FileUtils.readAllTextFromResource("classpathloadertest.up");
@@ -110,4 +42,130 @@ public class ParsedVersionsParserTest {
 
         assertEquals(versions.getVersions().size(), 3);
     }
+
+    private JsonNode loadTasksCases() {
+        StringReader f = new StringReader(FileUtils.readAllTextFromResource("tasks.yaml"));
+
+        DumperOptions options = new DumperOptions();
+        options.setDefaultScalarStyle(DumperOptions.ScalarStyle.LITERAL);
+
+        Object value = new Yaml(options).load(f);
+
+        return new YAMLMapper().convertValue(value, JsonNode.class);
+    }
+
+    @DataProvider(name = "valid")
+    public Object[][] validParams() {
+        JsonNode root = loadTasksCases();
+
+        Object[][] args = new Object[root.get("valid").size()][];
+
+        int i = 0;
+        //iterate each expected block
+        for (JsonNode testCase : root.get("valid")) {
+
+            //all the versions for this test case
+            List<ExpectedVersion> expectedBlocks = Lists.newArrayList();
+
+            String file = testCase.get("file").asText();
+
+            //all version blocks
+            for (JsonNode versions : testCase.withArray("expected")) {
+                ExpectedVersion expectedVersion = new ExpectedVersion();
+                expectedVersion.version = versions.get("version").asText();
+
+                for (JsonNode task : versions.get("tasks")) {
+                    ExpectedTask expectedTask = new ExpectedTask();
+                    expectedTask.clazz = task.get("class").asText();
+
+                    if (task.has("params")) {
+                        for (Iterator<Map.Entry<String, JsonNode>> it = task.get("params").fields(); it.hasNext(); ) {
+                            Map.Entry<String, JsonNode> elt = it.next();
+
+                            expectedTask.params.put(elt.getKey(), elt.getValue().asText());
+                        }
+                    }
+
+                    expectedVersion.tasks.add(expectedTask);
+                }
+
+                expectedBlocks.add(expectedVersion);
+            }
+
+            args[i] = new Object[]{file, expectedBlocks};
+
+            i++;
+        }
+
+        return args;
+    }
+
+    @DataProvider(name = "invalid")
+    public Object[][] invalidParams() {
+        JsonNode root = loadTasksCases();
+
+        Object[][] args = new Object[root.get("invalid").size()][];
+
+        int i = 0;
+        for (JsonNode testCase : root.get("valid")) {
+
+            args[i] = new Object[]{testCase.asText()};
+
+            i++;
+        }
+
+        return args;
+    }
+
+    private class ExpectedVersion {
+        private String version;
+        private List<ExpectedTask> tasks = Lists.newArrayList();
+    }
+
+    private class ExpectedTask {
+        private String clazz;
+        private Map<String, String> params = Maps.newHashMap();
+    }
+
+    @Test(dataProvider = "valid")
+    public void valid(String block, List<ExpectedVersion> expectedVersions) {
+        ParsingResult<ParsedVersions> run = run(block);
+
+        assertFalse(run.hasErrors());
+
+        ParsedVersions versions = run.resultValue;
+
+        assertEquals(versions.getVersions().size(), expectedVersions.size());
+
+        int i = 0;
+        for(ExpectedVersion expectedVersion : expectedVersions) {
+            ParsedVersion version = versions.getVersions().get(i);
+
+            assertEquals(version.getVersion(), expectedVersion.version);
+
+            int j = 0;
+            for (ExpectedTask expectedTask : expectedVersion.tasks) {
+                TaskDeclaration task = version.getTasks().get(j);
+
+                assertEquals(task.getImplClass(), expectedTask.clazz);
+                assertEquals(task.getParams().size(), expectedTask.params.size());
+
+                for (Map.Entry<String, String> expectedParam : expectedTask.params.entrySet()) {
+                    assertEquals(expectedParam.getValue(), task.getParams().get(expectedParam.getKey()));
+                }
+
+                j++;
+            }
+
+            i++;
+        }
+    }
+    @Test(dataProvider = "invalid")
+    public void invalid(String versionString) {
+
+        ParsingResult<ParsedVersions> result = run(versionString);
+
+        assertTrue(result.hasErrors(), String.valueOf(result.parseErrors));
+    }
+
 }

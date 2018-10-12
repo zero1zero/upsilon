@@ -43,6 +43,10 @@ subprojects {
         testCompile 'org.slf4j:slf4j-simple:1.7.22'
     }
 
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << '-parameters'
+    }
+
     task sourceJar(type: Jar) {
         from sourceSets.main.allJava
         classifier "sources"

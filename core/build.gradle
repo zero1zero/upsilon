@@ -3,8 +3,11 @@ version = parent.version
 
 dependencies {
     compile 'com.google.guava:guava:26.0-jre'
-    compile 'org.parboiled:parboiled-java:1.1.7'
+    compile 'org.parboiled:parboiled-java:1.2.0'
     compile 'javax.inject:javax.inject:1'
+
+    testCompile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.0'
+    testCompile 'com.fasterxml.jackson.core:jackson-databind:2.9.0'
 
     compileOnly 'org.projectlombok:lombok:1.18.2'
 }

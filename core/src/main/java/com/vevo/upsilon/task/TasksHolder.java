@@ -9,6 +9,7 @@ import com.vevo.upsilon.except.UpsilonUpgradeException;
 import com.vevo.upsilon.store.Version;
 import com.vevo.upsilon.task.parse.ParsedVersion;
 import com.vevo.upsilon.task.parse.ParsedVersions;
+import com.vevo.upsilon.task.parse.TaskDeclaration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,16 +31,16 @@ public class TasksHolder {
 
             List<Task> tasks = new ArrayList<>(version.getTasks().size());
 
-            for (String task : version.getTasks()) {
+            for (TaskDeclaration task : version.getTasks()) {
 
                 Class<? extends Task> taskClass;
                 try {
-                    taskClass = (Class<? extends Task>) Class.forName(task);
+                    taskClass = (Class<? extends Task>) Class.forName(task.getImplClass());
                 } catch (ClassNotFoundException e) {
                     throw new UpsilonInitializationException("Task class '" + task + "' not found on the classpath!", e);
                 }
 
-                Task loaded = injector.instance(taskClass);
+                Task loaded = injector.instance(taskClass, task.getParams());
 
                 checkState(loaded != null, "Could not instantiate task class '" + taskClass + "'");
 

@@ -1,0 +1,34 @@
+0.1a
+  - com.vevo.upsilon.jdbc.SQLRunnerTask
+    :/sql/0.1a-up.sql
+    :/sql/0.1a-bak.sql
+
+0.1a
+  - com.vevo.upsilon.jdbc.SQLRunnerTask('/sql/0.1a-up.sql', '/sql/0.1a-bak.sql')
+
+0.1a
+  - com.vevo.upsilon.jdbc.SQLRunnerTask
+    upgrade: /sql/0.1a-up.sql
+    rollback: /sql/0.1a-bak.sql
+
+0.1a
+  - com.vevo.upsilon.jdbc.SQLRunnerTask
+    * /sql/0.1a-up.sql
+    * /sql/0.1a-bak.sql
+
+0.1a
+  - com.vevo.upsilon.jdbc.SQLRunnerTask(version: 0.1a)
+0.1a
+  - com.vevo.upsilon.jdbc.SQLRunnerTask(version: 0.1a)
+0.1a
+  - com.vevo.upsilon.jdbc.SQLRunnerTask(version: 0.1a)
+0.1a
+  - com.vevo.upsilon.jdbc.SQLRunnerTask(version: 0.1a)
+
+0.1a
+  - com.vevo.upsilon.jdbc.SQLRunnerTask(version: 0.1a)
+
+#add whatever
+0.1a
+  - com.vevo.upsilon.jdbc.SQLRunnerTask(version: 0.1a)
+

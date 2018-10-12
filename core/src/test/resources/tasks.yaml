@@ -1,0 +1,199 @@
+valid:
+  - expected:
+    - version: 1.1
+      tasks:
+        - class: ThingClass
+        - class: ThingClass1
+    - version: 1.2
+      tasks:
+       - class: ThingClass2
+       - class: ThingClass3
+    file: |
+      1.1
+        - ThingClass
+        - ThingClass1
+      1.2
+        - ThingClass2
+        - ThingClass3
+
+  - expected:
+    - version: 1.1
+      tasks:
+        - class: ThingClass
+        - class: ThingClass1
+    file: |
+      1.1
+        - ThingClass
+        - ThingClass1
+
+  - expected:
+    - version: 1.1
+      tasks:
+        - class: ThingClass
+          params:
+            var: thing
+    - version: 1.2
+      tasks:
+        - class: ThingClass
+          params:
+            var: thing1
+            var1: 12
+            var2: something
+    - version: 1.3
+      tasks:
+        - class: ThingClass
+          params:
+            var: 0
+    - version: 1.4
+      tasks:
+        - class: ThingClass
+          params:
+            var: 0
+            var1: 1
+    - version: 1.5
+      tasks:
+        - class: ThingClass
+          params:
+            var: 0
+            var1: 1
+    - version: 1.6
+      tasks:
+        - class: ThingClass
+          params:
+            var: hello
+            var1: 1
+    - version: 2.0
+      tasks:
+        - class: ThingClass
+          params:
+            var: 0
+    - version: 3.1
+      tasks:
+        - class: Whatever
+    file: |
+      1.1
+        - ThingClass(var: 'thing')
+      1.2
+        - ThingClass(var: 'thing1', var1: 12, var2: 'something')
+
+      1.3
+        - ThingClass(var: 0)
+      1.4
+        - ThingClass(var: 0, var1: 1)
+
+      1.5
+        - ThingClass(
+          var: 0
+          var1: 1
+        )
+      1.6
+        - ThingClass(
+          var: 'hello',
+          var1: 1
+        )
+
+      2.0
+        - ThingClass(
+          var: 0
+        )
+
+      3.1
+        - Whatever
+
+  - expected:
+    - version: 1.1
+      tasks:
+        - class: MyTask
+          params:
+            var: val
+    - version: 1.2
+      tasks:
+        - class: ATask
+    - version: 1.3
+      tasks:
+        - class: ATask
+    - version: 1.0
+      tasks:
+        - class: ATask
+    - version: 0.1
+      tasks:
+        - class: ATask
+    - version: 0.1a
+      tasks:
+        - class: ATask
+    - version: 20.1
+      tasks:
+        - class: ATask
+    - version: 20.a
+      tasks:
+        - class: ATask
+    - version: a1.0
+      tasks:
+        - class: ATask
+    - version: a
+      tasks:
+        - class: ATask
+    - version: alongversion
+      tasks:
+        - class: ATask
+    file: |
+      1.1
+        - MyTask(var: 'val')
+      1.2
+        - ATask
+      1.3
+        - ATask
+      1.0
+        - ATask
+      0.1
+        - ATask
+      0.1a
+        - ATask
+      20.1
+        - ATask
+      20.a
+        - ATask
+      a1.0
+        - ATask
+      a
+        - ATask
+      alongversion
+        - ATask
+  - expected:
+    - version: 1.1
+      tasks:
+        - class: Thing
+          params:
+            var: here's my thing
+    file: |
+      1.1
+        - Thing(var: 'here\'s my thing')
+  - expected:
+    - version: 1.1
+      tasks:
+        - class: Thing
+          params:
+            var: here's my thing
+            var1: here's my thing's
+    file: |
+      1.1
+        - Thing(
+          var: 'here\'s my thing'
+          var1: 'here\'s my thing\'s'
+        )
+
+invalid:
+  - "justaversion"
+  - "justaversion - ATask?"
+  - "justaversion"
+  - "-JustATask"
+  - "a-com.thing.MyTask"
+  - "a-com.thing.MyTask"
+  - "a-com@:#KSLFK"
+  - "a-"
+  - "1.1 - 123123"
+  - "(var: thing)"
+  - "var: 'thing')"
+  - "(var 0"
+  - "(var:\n0)"
+  - "(var: 0)"
