@@ -1,7 +1,6 @@
 package com.vevo.upsilon.di;
 
 import com.google.common.collect.Maps;
-import com.sun.javafx.tools.packager.Param;
 import com.vevo.upsilon.except.UpsilonInitializationException;
 import com.vevo.upsilon.task.Task;
 import org.testng.annotations.Test;
@@ -12,7 +11,6 @@ import java.util.concurrent.Callable;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
 
 public class DependencyInjectorTest {
 

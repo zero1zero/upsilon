@@ -2,11 +2,7 @@ package com.vevo.upsilon.task.parse;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Chars;
 import org.parboiled.support.Var;
-
-import javax.swing.text.html.Option;
 
 class VersionsParser extends BaseParser<Object> {
 
