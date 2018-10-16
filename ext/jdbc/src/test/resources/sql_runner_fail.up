@@ -1,0 +1,5 @@
+0.1a
+  - com.vevo.upsilon.jdbc.SQLRunnerTask(
+    upgrade: '1.2.break.sql',
+    rollback: '1.2.down.sql'
+  )

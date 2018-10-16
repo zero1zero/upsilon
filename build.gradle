@@ -10,6 +10,7 @@ task build{}
 //for each submodule that we want to actually release, add to these depends on
 afterReleaseBuild.dependsOn ':core:publish'
 afterReleaseBuild.dependsOn ':ext:s3:publish'
+afterReleaseBuild.dependsOn ':ext:jdbc:publish'
 
 subprojects {
     apply plugin: 'java'
