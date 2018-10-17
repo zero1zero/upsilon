@@ -1,5 +1,11 @@
 group 'com.vevo.upsilon.ext'
 
 dependencies {
+    compile project(':core')
     compile 'commons-dbutils:commons-dbutils:1.7'
+
+    compileOnly 'org.projectlombok:lombok:1.18.2'
+
+    testCompile 'org.hsqldb:hsqldb:2.4.0'
+    testCompile 'org.apache.commons:commons-dbcp2:2.5.0'
 }
