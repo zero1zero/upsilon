@@ -2,7 +2,6 @@ package com.vevo.upsilon.jdbc;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteSource;
-import com.vevo.upsilon.except.UpsilonUpgradeException;
 import com.vevo.upsilon.task.Task;
 import lombok.ToString;
 import org.apache.commons.dbutils.QueryRunner;

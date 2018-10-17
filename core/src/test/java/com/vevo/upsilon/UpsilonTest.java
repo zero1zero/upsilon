@@ -3,7 +3,6 @@ package com.vevo.upsilon;
 import com.vevo.upsilon.lock.Lock;
 import com.vevo.upsilon.store.Store;
 import com.vevo.upsilon.store.Version;
-import com.vevo.upsilon.task.Task;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -14,8 +13,9 @@ import org.testng.annotations.Test;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

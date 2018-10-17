@@ -5,9 +5,6 @@ import com.vevo.upsilon.di.Dependencies;
 import com.vevo.upsilon.execute.UpgradeStatus;
 import com.vevo.upsilon.task.load.ClasspathTasksLoader;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.hsqldb.HsqlException;
-import org.hsqldb.jdbc.JDBCDataSource;
-import org.hsqldb.jdbc.JDBCPool;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
