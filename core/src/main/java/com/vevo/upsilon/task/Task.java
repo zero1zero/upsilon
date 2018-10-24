@@ -2,7 +2,7 @@ package com.vevo.upsilon.task;
 
 public interface Task {
 
-    void upgrade() throws Exception;
+    void upgrade() throws Throwable;
 
-    void rollback() throws Exception;
+    void rollback() throws Throwable;
 }
