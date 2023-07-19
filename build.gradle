@@ -1,5 +1,6 @@
 plugins {
     id 'net.researchgate.release' version '2.7.0'
+    id 'net.linguica.maven-settings' version '0.5'
 }
 
 group 'com.vevo.upsilon'
@@ -15,17 +16,12 @@ afterReleaseBuild.dependsOn ':ext:jdbc:publish'
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
-    apply plugin: 'maven'
 
-    sourceCompatibility = 1.8
+    sourceCompatibility = 11
 
     repositories {
         mavenLocal()
         mavenCentral()
-        maven {
-            url "http://nexus.vevodev.com/content/repositories/releases/"
-        }
-        jcenter()
     }
 
     build {
@@ -37,11 +33,11 @@ subprojects {
     }
 
     dependencies {
-        compile 'org.slf4j:slf4j-api:1.7.22'
+        implementation 'org.slf4j:slf4j-api:1.7.22'
 
-        testCompile 'org.testng:testng:6.10'
-        testCompile 'org.mockito:mockito-core:2.5.4'
-        testCompile 'org.slf4j:slf4j-simple:1.7.22'
+        testImplementation 'org.testng:testng:6.10'
+        testImplementation  'org.mockito:mockito-core:2.5.4'
+        testImplementation 'org.slf4j:slf4j-simple:1.7.22'
     }
 
     tasks.withType(JavaCompile) {
@@ -52,26 +48,6 @@ subprojects {
         from sourceSets.main.allJava
         classifier "sources"
     }
-
-    // All of this can maybe go away if https://issues.gradle.org/browse/GRADLE-2365 gets solved
-    def getCreds = { id ->
-        def username = System.getenv("NEXUS_USER")
-        def password = System.getenv("NEXUS_PASSWORD")
-
-        if (!(username && password && username.trim() && password.trim())) {
-            File mavenSettings = new File("${System.properties['user.home']}/.m2/settings.xml")
-            if (mavenSettings.exists()) {
-                def xmlSlurper = new XmlSlurper()
-                def settings = xmlSlurper.parse(mavenSettings)
-                username = settings.servers.children().find { it.id == id }.username
-                password = settings.servers.children().find { it.id == id }.password
-            }
-        }
-
-        [username: username, password: password]
-    }
-
-    def releaseCreds = getCreds('releases')
 
     publishing {
         publications {
@@ -84,11 +60,8 @@ subprojects {
 
         repositories {
             maven {
+                name 'vevo'
                 url "http://nexus.vevodev.com/content/repositories/releases/"
-                credentials {
-                    username = releaseCreds.username
-                    password = releaseCreds.password
-                }
             }
         }
     }

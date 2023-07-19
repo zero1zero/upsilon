@@ -74,7 +74,7 @@ public class UpgradeExecutor {
                 log.info("Running upgrade for task '{}'", task);
                 try {
                     task.upgrade();
-                } catch (Exception t) {
+                } catch (Throwable t) {
 
                     log.error("Exception during upgrade task '" + task + "'. Proceeding with rollback of all tasks in that version.", t);
 

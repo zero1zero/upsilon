@@ -24,7 +24,6 @@ public class UpgradeStatusChecker {
                     Thread.sleep(1000);
                 } while (!gotLock);
             } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         });
     }
